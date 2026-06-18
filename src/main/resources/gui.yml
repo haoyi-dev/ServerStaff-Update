@@ -1,0 +1,58 @@
+ReportGui:
+  Title: "&8Quản Lý Staff | &cTố Cáo"
+  Rows: 5
+  Content:
+    blank:
+      ID: stained_glass_pane
+      Data: 15
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+  Format:
+    StaffIcon:
+      ID: skull_item
+      Data: 3
+      Name: "&eNhân sự: &a<name>"
+      Lore:
+        - "&7Nhấn để gửi tố cáo nhân sự này"
+        - "&8• &fHãy nhập lý do rõ ràng sau khi chọn"
+
+VoteGui:
+  Title: "&8Quản Lý Staff | &aĐánh Giá"
+  Rows: 5
+  Content:
+    blank:
+      ID: stained_glass_pane
+      Data: 15
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+  Format:
+    StaffIcon:
+      ID: skull_item
+      Data: 3
+      Name: "&eNhân sự: &a<name>"
+      Lore:
+        - "&7Nhấn để đánh giá nhân sự này"
+        - "&8• &fMỗi ngày chỉ nên vote công tâm"
+
+StartGui:
+  Title: "&8Ca Trực Staff | &f<online>&8/&a<req_online>"
+  Rows: 3
+  Content:
+    blank:
+      ID: stained_glass_pane
+      Data: 15
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    start:
+      ID: stained_glass_pane
+      Data: 5
+      Name: "&a&lBẮT ĐẦU"
+      Lore:
+        - "&7Nhấn để bắt đầu tính giờ ca trực"
+        - "&8• &fDùng &a/serverstaff checkin &fđể vào nhanh"
+      Slots: [11]
+    stop:
+      ID: stained_glass_pane
+      Data: 14
+      Name: "&c&lTẠM DỪNG"
+      Lore:
+        - "&7Nhấn để tạm dừng tính giờ ca trực"
+        - "&8• &fBạn có thể tiếp tục bất cứ lúc nào"
+      Slots: [15]

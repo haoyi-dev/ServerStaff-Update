@@ -1,0 +1,45 @@
+#     Product Information     #
+#-----------------------------#
+#      Author: CamChua_VN     #
+#        Version: v1.1.1      #
+#    Support: 1.12 -> 1.19.2  #
+#                             #
+#  SẢN PHẨM CỦA DI HOA STORE  #
+#-----------------------------#
+
+# Our Website: www.dihoastore.net
+# Email: dihoastore.mc@gmail.com
+# Fanpage: www.facebook.com/dihoastore/
+
+# Key License / Hướng dẫn cài: https://bit.ly/3gJtsbp
+#license: "XXXX-XXXX-XXXX-XXXX"
+
+# Danh sách các Permissions: serverstaff.vote    -  /serverstaff vote
+#                            serverstaff.report  -  /serverstaff report
+#                            serverstaff.help    -  /serverstaff help
+#                            serverstaff.start   -  /serverstaff start
+#                            serverstaff.admin   -  Admin Commands
+
+
+
+Settings:
+  # Tự tính giờ vào ngày mới kể từ khi staff truy cập vào server
+  # Nếu còn online thì thời gian sẽ chạy còn offline thì sẽ ngưng đến khi online lại thì tiếp tục tự động đến khi hoàn tất điểm danh online
+  AutoCheckIn: false
+
+  # Thời gian yêu cầu Staff phải Online, tính bằng giây
+  RequireOnline: 10800
+
+  # Khoảng cách giữa 2 lần tố cáo Staff (tính bằng ngày)
+  # Ví dụ dưới đây 3 ngày/lần
+  ReportCountdown: 3
+
+  # Lưu tối đa log 7 ngày gần nhất, những logs quá 7 ngày sẽ bị xoá
+  # Đặt 0 để tắt đi tính năng này
+  Logs-Save: 7
+
+  # Tùy chỉnh câu lệnh sử dụng của Plugin
+  CommandAliases:
+    - ss
+    - sstaff
+    - staff

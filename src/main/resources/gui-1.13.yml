@@ -1,0 +1,47 @@
+ReportGui:
+  Title: "&8Server Staff | Report"
+  Rows: 5
+  Content:
+    blank:
+      ID: black_stained_glass_pane
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+  Format:
+    StaffIcon:
+      ID: player_head
+      Name: "&eStaff: &a<name>"
+      Lore:
+        - "&fBấm vào để tố cáo"
+
+VoteGui:
+  Title: "&8Server Staff | Vote"
+  Rows: 5
+  Content:
+    blank:
+      ID: black_stained_glass_pane
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+  Format:
+    StaffIcon:
+      ID: player_head
+      Name: "&eStaff: &a<name>"
+      Lore:
+        - "&fBấm vào để Vote"
+
+StartGui:
+  Title: "&8Server Staff | <online>/<req_online>"
+  Rows: 3
+  Content:
+    blank:
+      ID: black_stained_glass_pane
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    start:
+      ID: lime_stained_glass_pane
+      Name: "&a&lBẮT ĐẦU"
+      Lore:
+        - "&fBấm vào đây để bắt đầu"
+      Slots: [11]
+    stop:
+      ID: red_stained_glass_pane
+      Name: "&c&lTẠM DỪNG"
+      Lore:
+        - "&fBấm vào đây để tạm dừng"
+      Slots: [15]

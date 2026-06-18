@@ -1,0 +1,39 @@
+name: ServerStaff
+main: camchua.serverstaff.Main
+version: 1.2
+api-version: '1.20'
+author: [CamChua_VN, Yuan_VN, Duckk_85]
+folia-supported: true
+
+commands:
+  serverstaff:
+    description: Main command of ServerStaff
+    usage: /serverstaff <subcommand>
+
+softdepend: [PlaceholderAPI]
+
+permissions:
+  serverstaff.start:
+    description: Open start GUI and use checkin flow
+    default: op
+  serverstaff.vote:
+    description: Open vote GUI
+    default: op
+  serverstaff.report:
+    description: Open report GUI
+    default: op
+  serverstaff.admin:
+    description: Admin commands (reload/addstaff/removestaff/info)
+    default: op
+  serverstaff.help:
+    description: Show help command
+    default: true
+  serverstaff.chat:
+    description: Toggle staff chat mode
+    default: op
+  serverstaff.status:
+    description: View plugin runtime status
+    default: op
+  serverstaff.top:
+    description: View top online staff
+    default: op
