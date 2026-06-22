@@ -49,6 +49,7 @@ public class ReportGui implements Listener {
                     continue;
                 }
 
+                // Fix bug folia gui
                 ItemStack sff = new ItemStack(Utils.matchMaterial(gui.getString("ReportGui.Format.StaffIcon.ID")), 1, (byte) gui.getInt("ReportGui.Format.StaffIcon.Data"));
                 SkullMeta msff = (SkullMeta) sff.getItemMeta();
                 msff.setDisplayName(gui.getString("ReportGui.Format.StaffIcon.Name").replace("&", "§").replace("<name>", staff));
@@ -83,6 +84,8 @@ public class ReportGui implements Listener {
         Player p = (Player) e.getWhoClicked();
         if(!viewers.contains(p)) return;
 
+
+        // Fix temp 3
         FileConfiguration messages = FileManager.getFileConfig(FileManager.Files.MESSAGES);
         FileConfiguration gui = FileManager.getFileConfig(FileManager.Files.GUI);
 

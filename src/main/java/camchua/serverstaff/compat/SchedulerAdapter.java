@@ -1,17 +1,23 @@
 package camchua.serverstaff.compat;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
+// Update Folia by Yuan_Dev
+
 public final class SchedulerAdapter {
+
+    private static final boolean FOLIA = detectFolia();
 
     private SchedulerAdapter() {}
 
-    public static boolean isFolia() {
+    private static boolean detectFolia() {
         try {
             Bukkit.class.getMethod("getGlobalRegionScheduler");
             return true;
@@ -20,19 +26,26 @@ public final class SchedulerAdapter {
         }
     }
 
+    public static boolean isFolia() {
+        return FOLIA;
+    }
+
+    // Fix temp 1
     public static void runTaskLater(JavaPlugin plugin, Runnable runnable, long delayTicks) {
-        if (isFolia()) {
+        if (FOLIA) {
             try {
-                Object globalScheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(Bukkit.getServer());
-                Method runDelayed = globalScheduler.getClass().getMethod(
+                Object scheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(null);
+                Method runDelayed = scheduler.getClass().getMethod(
                         "runDelayed",
                         Plugin.class,
-                        java.util.function.Consumer.class,
+                        Consumer.class,
                         long.class
                 );
-                runDelayed.invoke(globalScheduler, plugin, (java.util.function.Consumer<Object>) t -> runnable.run(), delayTicks);
+
+                runDelayed.invoke(scheduler, plugin, (Consumer<Object>) task -> runnable.run(), delayTicks);
                 return;
-            } catch (Throwable ignored) {
+            } catch (Throwable throwable) {
+                throw new IllegalStateException("Khong the chay task tri hoan tren scheduler Folia", throwable);
             }
         }
 
@@ -40,19 +53,21 @@ public final class SchedulerAdapter {
     }
 
     public static void runTaskTimer(JavaPlugin plugin, Runnable runnable, long delayTicks, long periodTicks) {
-        if (isFolia()) {
+        if (FOLIA) {
             try {
-                Object globalScheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(Bukkit.getServer());
-                Method runAtFixedRate = globalScheduler.getClass().getMethod(
+                Object scheduler = Bukkit.class.getMethod("getGlobalRegionScheduler").invoke(null);
+                Method runAtFixedRate = scheduler.getClass().getMethod(
                         "runAtFixedRate",
                         Plugin.class,
-                        java.util.function.Consumer.class,
+                        Consumer.class,
                         long.class,
                         long.class
                 );
-                runAtFixedRate.invoke(globalScheduler, plugin, (java.util.function.Consumer<Object>) t -> runnable.run(), delayTicks, periodTicks);
+
+                runAtFixedRate.invoke(scheduler, plugin, (Consumer<Object>) task -> runnable.run(), delayTicks, periodTicks);
                 return;
-            } catch (Throwable ignored) {
+            } catch (Throwable throwable) {
+                throw new IllegalStateException("Failed to run timer task on Folia scheduler", throwable);
             }
         }
 
@@ -60,21 +75,49 @@ public final class SchedulerAdapter {
     }
 
     public static void runEntityTask(JavaPlugin plugin, Entity entity, Runnable runnable) {
-        if (isFolia()) {
+        if (FOLIA) {
             try {
                 Object scheduler = entity.getClass().getMethod("getScheduler").invoke(entity);
                 Method run = scheduler.getClass().getMethod(
                         "run",
                         Plugin.class,
-                        java.util.function.Consumer.class,
+                        Consumer.class,
                         Runnable.class
                 );
-                run.invoke(scheduler, plugin, (java.util.function.Consumer<Object>) t -> runnable.run(), null);
+
+                run.invoke(scheduler, plugin, (Consumer<Object>) task -> runnable.run(), null);
                 return;
-            } catch (Throwable ignored) {
+            } catch (Throwable throwable) {
+                throw new IllegalStateException("Failed to run entity task on Folia scheduler", throwable);
             }
         }
 
         Bukkit.getScheduler().runTask(plugin, runnable);
+    }
+
+
+    // Error fix part 1
+    public static void runEntityTaskLater(JavaPlugin plugin, Entity entity, Runnable runnable, long delayTicks) {
+        if (FOLIA) {
+            try {
+                Object scheduler = entity.getClass().getMethod("getScheduler").invoke(entity);
+                Method runDelayed = scheduler.getClass().getMethod(
+                        "runDelayed",
+                        Plugin.class,
+                        Consumer.class,
+                        Runnable.class,
+                        long.class
+                );
+
+
+                // fix temp 2
+                runDelayed.invoke(scheduler, plugin, (Consumer<Object>) task -> runnable.run(), null, delayTicks);
+                return;
+            } catch (Throwable throwable) {
+                throw new IllegalStateException("Failed to run delayed entity task on Folia scheduler", throwable);
+            }
+        }
+
+        Bukkit.getScheduler().runTaskLater(plugin, runnable, delayTicks);
     }
 }

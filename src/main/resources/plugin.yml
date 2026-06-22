@@ -1,6 +1,6 @@
 name: ServerStaff
 main: camchua.serverstaff.Main
-version: 1.2
+version: 1.4-UpdateFolia
 api-version: '1.20'
 author: [CamChua_VN, Yuan_VN, Duckk_85]
 folia-supported: true
