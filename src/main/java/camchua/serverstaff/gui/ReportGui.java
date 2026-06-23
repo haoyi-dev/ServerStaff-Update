@@ -1,8 +1,10 @@
 package camchua.serverstaff.gui;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,102 +26,139 @@ import camchua.serverstaff.compat.SchedulerAdapter;
 
 public class ReportGui implements Listener {
 
-    public static void open(Player p) {
-        FileConfiguration gui = FileManager.getFileConfig(FileManager.Files.GUI);
-        FileConfiguration data = FileManager.getFileConfig(FileManager.Files.DATA);
+    private static final Set<UUID> viewers = new HashSet<>();
 
-        Inventory inv = Bukkit.createInventory(null, gui.getInt("ReportGui.Rows") * 9, gui.getString("ReportGui.Title").replace("&", "§"));
-
-        ItemStack blank = new ItemStack(Utils.matchMaterial(gui.getString("ReportGui.Content.blank.ID")), 1, (byte) gui.getInt("ReportGui.Content.blank.Data"));
-        ItemMeta mblank = blank.getItemMeta();
-        mblank.setDisplayName(" ");
-        blank.setItemMeta(mblank);
-
-        for(int s : gui.getIntegerList("ReportGui.Content.blank.Slots")) {
-            inv.setItem(s, blank);
-        }
-
-        if(data.contains("StaffList")) {
-            List<String> stafflist = data.getStringList("StaffList");
-            for(String staff : stafflist) {
-                if(p.getName().equals(staff)) {
-                    continue;
-                }
-                if(data.getStringList("Data." + p.getName() + ".Player.Report").contains(staff)) {
-                    continue;
-                }
-
-                // Fix bug folia gui
-                ItemStack sff = new ItemStack(Utils.matchMaterial(gui.getString("ReportGui.Format.StaffIcon.ID")), 1, (byte) gui.getInt("ReportGui.Format.StaffIcon.Data"));
-                SkullMeta msff = (SkullMeta) sff.getItemMeta();
-                msff.setDisplayName(gui.getString("ReportGui.Format.StaffIcon.Name").replace("&", "§").replace("<name>", staff));
-                List<String> lores = new ArrayList<>();
-                for(String lore : gui.getStringList("ReportGui.Format.StaffIcon.Lore")) {
-                    lores.add(lore.replace("&", "§"));
-                }
-                msff.setLore(lores);
-                msff.setOwner(staff);
-                sff.setItemMeta(msff);
-                inv.addItem(sff);
-            }
-        }
-
-        p.openInventory(inv);
-        if(!viewers.contains(p)) viewers.add(p);
-    }
-
-
-    private static List<Player> viewers = new ArrayList<>();
-
-
-    private Main main;
+    private final Main main;
 
     public ReportGui(Main main) {
         this.main = main;
     }
 
+    public static void open(Player p) {
+        FileConfiguration gui = FileManager.getFileConfig(FileManager.Files.GUI);
+        FileConfiguration data = FileManager.getFileConfig(FileManager.Files.DATA);
+
+        Inventory inv = Bukkit.createInventory(
+                null,
+                gui.getInt("ReportGui.Rows") * 9,
+                color(gui.getString("ReportGui.Title"))
+        );
+
+        ItemStack blank = new ItemStack(
+                Utils.matchMaterial(gui.getString("ReportGui.Content.blank.ID")),
+                1,
+                (byte) gui.getInt("ReportGui.Content.blank.Data")
+        );
+
+        ItemMeta mblank = blank.getItemMeta();
+        if (mblank != null) {
+            mblank.setDisplayName(" ");
+            blank.setItemMeta(mblank);
+        }
+
+        for (int s : gui.getIntegerList("ReportGui.Content.blank.Slots")) {
+            inv.setItem(s, blank);
+        }
+
+        if (data.contains("StaffList")) {
+            List<String> stafflist = data.getStringList("StaffList");
+
+            for (String staff : stafflist) {
+                if (p.getName().equals(staff)) {
+                    continue;
+                }
+
+                if (data.getStringList("Data." + p.getName() + ".Player.Report").contains(staff)) {
+                    continue;
+                }
+
+                ItemStack sff = new ItemStack(
+                        Utils.matchMaterial(gui.getString("ReportGui.Format.StaffIcon.ID")),
+                        1,
+                        (byte) gui.getInt("ReportGui.Format.StaffIcon.Data")
+                );
+
+                ItemMeta meta = sff.getItemMeta();
+                if (meta == null) {
+                    continue;
+                }
+
+                meta.setDisplayName(color(gui.getString("ReportGui.Format.StaffIcon.Name")).replace("<name>", staff));
+
+                List<String> lores = new ArrayList<>();
+                for (String lore : gui.getStringList("ReportGui.Format.StaffIcon.Lore")) {
+                    lores.add(color(lore));
+                }
+                meta.setLore(lores);
+
+                if (meta instanceof SkullMeta skullMeta) {
+                    skullMeta.setOwner(staff);
+                }
+
+                sff.setItemMeta(meta);
+                inv.addItem(sff);
+            }
+        }
+
+        p.openInventory(inv);
+        viewers.add(p.getUniqueId());
+    }
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-        if(!viewers.contains(p)) return;
+        if (!(e.getWhoClicked() instanceof Player p)) {
+            return;
+        }
 
+        if (!viewers.contains(p.getUniqueId())) {
+            return;
+        }
 
-        // Fix temp 3
+        e.setCancelled(true);
+
+        Inventory topInventory = e.getView().getTopInventory();
+        if (e.getRawSlot() < 0 || e.getRawSlot() >= topInventory.getSize()) {
+            return;
+        }
+
+        ItemStack item = e.getCurrentItem();
+        if (item == null || item.getType().isAir()) {
+            return;
+        }
+
         FileConfiguration messages = FileManager.getFileConfig(FileManager.Files.MESSAGES);
         FileConfiguration gui = FileManager.getFileConfig(FileManager.Files.GUI);
 
-        e.setCancelled(true);
-        if(e.getCurrentItem().getType() == Utils.matchMaterial(gui.getString("ReportGui.Format.StaffIcon.ID"))) {
-            Calendar c = Calendar.getInstance();
-            int month = c.getTime().getMonth() + 1;
-
-            String replacePattern = gui.getString("ReportGui.Format.StaffIcon.Name").replace("&", "§").replace("<name>", "");
-            String name = e.getCurrentItem().getItemMeta().getDisplayName().replace(replacePattern, "");
-
-//            StaffData staff = StaffData.data.get(name);
-//            staff.setReport(staff.getReport() + 1);
-//            StaffData.data.replace(name, staff);
-//
-//            List<String> report = data.getStringList("Data." + p.getName() + ".Player.Report");
-//            report.add(name);
-//            data.set("Data." + p.getName() + ".Player.Report", report);
-//            try {
-//                data.save(dataf);
-//            } catch(Exception ex) {
-//
-//            }
-
-            main.rp.put(p.getName(), name);
-            p.sendMessage(ChatColor.translateAlternateColorCodes('&', messages.getString("Report")).replace("<name>", name));
-            SchedulerAdapter.runTaskLater(main, p::closeInventory, 10);
+        if (item.getType() != Utils.matchMaterial(gui.getString("ReportGui.Format.StaffIcon.ID"))) {
+            return;
         }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) {
+            return;
+        }
+
+        String replacePattern = color(gui.getString("ReportGui.Format.StaffIcon.Name")).replace("<name>", "");
+        String name = meta.getDisplayName().replace(replacePattern, "");
+
+        main.rp.put(p.getName(), name);
+
+        p.sendMessage(color(messages.getString("Report")).replace("<name>", name));
+
+        SchedulerAdapter.runEntityTaskLater(main, p, p::closeInventory, 10L);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        Player p = (Player) e.getPlayer();
-        if(viewers.contains(p)) viewers.remove(p);
+        if (e.getPlayer() instanceof Player p) {
+            viewers.remove(p.getUniqueId());
+        }
     }
 
+    private static String color(String text) {
+        if (text == null) {
+            return "";
+        }
+        return ChatColor.translateAlternateColorCodes('&', text);
+    }
 }
