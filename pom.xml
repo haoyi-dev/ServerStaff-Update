@@ -7,7 +7,7 @@
 
     <groupId>camchua.serverstaff</groupId>
     <artifactId>ServerStaff</artifactId>
-    <version>1.4-UpdateFolia</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <properties>
